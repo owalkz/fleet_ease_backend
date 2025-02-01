@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Welcome to FleetEase</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #ffffff;
+            color: #333333;
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            -webkit-text-size-adjust: none;
+            -ms-text-size-adjust: none;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .header {
+            text-align: center;
+            padding: 20px 0;
+        }
+
+        .header img {
+            max-width: 100%; /* Make image responsive */
+            height: auto;
+        }
+
+        .content {
+            text-align: center;
+        }
+
+        .content h1 {
+            font-size: 2em; /* Use relative units */
+            color: #000000;
+            margin: 1em 0; /* Use relative units */
+        }
+
+        .content p {
+            font-size: 1em; /* Use relative units */
+            line-height: 1.5;
+            margin: 0.5em 0; /* Use relative units */
+        }
+
+        .button {
+            display: inline-block;
+            padding: 0.8em 1.6em; /* Use relative units */
+            font-size: 1em; /* Use relative units */
+            color: #ffffff;
+            background-color: #007bff;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 1em 0; /* Use relative units */
+        }
+
+        .footer {
+            text-align: center;
+            font-size: 0.9em; /* Use relative units */
+            color: #666666;
+            padding: 1em; /* Use relative units */
+            border-top: 1px solid #dddddd;
+        }
+
+        @media screen and (max-width: 480px) { /* Adjust breakpoint */
+            .content h1 {
+                font-size: 1.5em; /* Smaller heading */
+            }
+
+            .content p {
+                font-size: 0.9em; /* Smaller text */
+            }
+
+            .button {
+                font-size: 0.9em; /* Smaller button text */
+                padding: 0.6em 1.2em; /* Smaller button padding */
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <img src="cid:companyLogo" alt="FleetEase Logo" />
+        </div>
+        <div class="content">
+            <h1>HELLO!</h1>
+            <p>Hey ${name},</p>
+            <p>
+                Welcome to FleetEase! We're thrilled to have you here. At FleetEase, you can
+                securely and efficiently manage your fleet.
+            </p>
+            <p>Log in to your new account below:</p>
+            <a href="${loginLink}" class="button">Log In</a>
+            <p>
+                We are excited to see what you will achieve with us. Stay tuned for
+                updates.
+            </p>
+        </div>
+        <div class="footer">
+            <p>Contact us:</p>
+            <p>Email: <a href="mailto:fleetease@gmail.com">fleetease@gmail.com</a></p>
+            <p>Phone: <a href="tel:0101010100">0101010100</a></p>
+        </div>
+    </div>
+</body>
+
+</html>
