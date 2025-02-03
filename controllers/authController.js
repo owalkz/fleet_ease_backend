@@ -1,8 +1,9 @@
 const bcrypt = require("bcryptjs");
 const fs = require("fs");
 const jwt = require("jsonwebtoken");
-const User = require("../models/userModel");
+const path = require("path");
 const sendEmail = require("../utils/sendEmail");
+const User = require("../models/userModel");
 
 const register = async (req, res, next) => {
   const { name, accountType, emailAddress, password } = req.body;
@@ -28,8 +29,9 @@ const register = async (req, res, next) => {
       emailAddress: emailAddress,
       password: hashedPassword,
     });
+    const filePath = path.join(__dirname, '../utils/mailingAssets/hello.html');
     const templateString = fs.readFileSync(
-      "./utils/mailingAssets/hello.html",
+      filePath,
       "utf8"
     );
     const emailContent = templateString
