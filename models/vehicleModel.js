@@ -37,10 +37,6 @@ const VehicleSchema = Mongoose.Schema({
     type: Date,
     required: false,
   },
-  profilePhoto: {
-    type: String, 
-    required: false,
-  }
 });
 
 module.exports = Mongoose.model("Vehicle", VehicleSchema);
