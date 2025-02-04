@@ -29,11 +29,8 @@ const register = async (req, res, next) => {
       emailAddress: emailAddress,
       password: hashedPassword,
     });
-    const filePath = path.join(__dirname, '../utils/mailingAssets/hello.html');
-    const templateString = fs.readFileSync(
-      filePath,
-      "utf8"
-    );
+    const filePath = path.join(__dirname, "../utils/mailingAssets/hello.html");
+    const templateString = fs.readFileSync(filePath, "utf8");
     const emailContent = templateString
       .replace("${name}", name)
       .replace("${loginLink}", `${process.env.CLIENT_URL}/login`);
@@ -65,21 +62,22 @@ const login = async (req, res, next) => {
   try {
     const user = await User.findOne({ emailAddress });
     if (!user) {
-      return res.status(422).json({message: "Invalid credentials entered"});
+      return res.status(422).json({ message: "Invalid credentials entered" });
     }
     if (user.matchPassword(password)) {
       const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
         expiresIn: "1d",
       });
+      const {password: _, ...userWithoutPassword} = user.toObject();
       res.status(200).json({
         message: "Login successful!",
         token: token,
+        user: userWithoutPassword,
       });
     }
   } catch (err) {
-    return res.status(500).json({message: "Failed to login."});
+    return res.status(500).json({ message: "Failed to login." });
   }
-
 };
 
 const forgotPassword = (req, res, next) => {};
