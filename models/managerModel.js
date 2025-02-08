@@ -1,7 +1,7 @@
 const bcrypt = require('bcryptjs');
 const Mongoose = require("mongoose");
 
-const UserSchema = Mongoose.Schema({
+const ManagerSchema = Mongoose.Schema({
   name: {
     type: String,
     required: true,
@@ -19,18 +19,14 @@ const UserSchema = Mongoose.Schema({
     type: String,
     required: true,
   },
-  licenseExpiryDate: {
-    type: Date,
-    required: false,
-  },
   profilePhoto: {
     type: String, 
     required: false,
   }
 });
 
-UserSchema.methods.matchPassword = async function (enteredPassword) {
+ManagerSchema.methods.matchPassword = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
 };
 
-module.exports = Mongoose.model("User", UserSchema);
+module.exports = Mongoose.model("Manager", ManagerSchema);

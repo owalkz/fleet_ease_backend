@@ -1,0 +1,36 @@
+const bcrypt = require('bcryptjs');
+const Mongoose = require("mongoose");
+
+const DriverSchema = Mongoose.Schema({
+  name: {
+    type: String,
+    required: true,
+  },
+  accountType: {
+    type: String,
+    required: true,
+  },
+  emailAddress: {
+    type: String,
+    required: true,
+    unique: true,
+  },
+  password: {
+    type: String,
+    required: true,
+  },
+  licenseExpiryDate: {
+    type: Date,
+    required: false,
+  },
+  profilePhoto: {
+    type: String, 
+    required: false,
+  }
+});
+
+DriverSchema.methods.matchPassword = async function (enteredPassword) {
+  return await bcrypt.compare(enteredPassword, this.password);
+};
+
+module.exports = Mongoose.model("Driver", DriverSchema);
