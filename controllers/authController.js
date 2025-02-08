@@ -108,7 +108,6 @@ const forgotPassword = async (req, res, next) => {
   const resetToken = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
     expiresIn: "10m",
   });
-  console.log(resetToken);
   const resetURL = `${process.env.CLIENT_URL}/reset-password/${resetToken}`;
   const filePath = path.join(
     __dirname,
@@ -132,6 +131,7 @@ const forgotPassword = async (req, res, next) => {
 };
 
 const resetPassword = async (req, res, next) => {
+  console.log("Reset Password Route Hit", req.method, req.params, req.body);
   const resetToken = req.params.id;
   const { password } = req.body;
   try {
