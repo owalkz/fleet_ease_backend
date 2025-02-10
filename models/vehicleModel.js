@@ -21,19 +21,14 @@ const VehicleSchema = Mongoose.Schema({
     type: Boolean,
     required: true,
   },
-  latestServiceDate: {
-    type: Date,
-    required: true,
-  },
   image: {
     type: String,
-    required: true,
   },
   serviceDates: {
     type: [Date],
     required: true,
   },
-  licenseExpiryDate: {
+  insuranceExpiryDate: {
     type: Date,
     required: false,
   },
