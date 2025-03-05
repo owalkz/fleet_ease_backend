@@ -28,6 +28,7 @@ const tripSchema = Mongoose.Schema({
       speed: { type: Number, required: true },
       latitude: { type: Number },
       longitude: { type: Number },
+      eventType: { type: String, default: "" },
     },
   ],
   status: { type: String, enum: ["active", "completed"], default: "active" },

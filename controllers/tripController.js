@@ -39,7 +39,7 @@ const startTrip = async (req, res, next) => {
 
 const updateTrip = async (req, res, next) => {
   try {
-    const { speed, latitude, longitude } = req.body;
+    const { speed, latitude, longitude, eventType } = req.body;
     const tripId = req.params.id;
     const trip = await Trip.findById(tripId);
     if (!trip || trip.status !== "active") {
@@ -59,7 +59,7 @@ const updateTrip = async (req, res, next) => {
       // Update distance traveled
       trip.distanceTraveled += distance;
     }
-    trip.speedLogs.push({ speed, timestamp: new Date(), longitude, latitude });
+    trip.speedLogs.push({ speed, timestamp: new Date(), longitude, latitude, eventType });
     trip.endLocation = { latitude, longitude };
     await trip.save();
     return res.status(200).json({ message: "Trip updated successfully!" });
