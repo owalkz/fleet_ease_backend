@@ -24,9 +24,17 @@ const DriverSchema = Mongoose.Schema({
     required: false,
   },
   profilePhoto: {
-    type: String, 
-    required: false,
-  }
+    fileName: {
+      type: String,
+      required: false,
+      default: "",
+    },
+    url: {
+      type: String,
+      required: false,
+      default: "",
+    },
+  },
 });
 
 DriverSchema.methods.matchPassword = async function (enteredPassword) {

@@ -12,7 +12,9 @@ const getNewAccessToken = async () => {
     try {
       const response = await fetch("https://api.dropbox.com/oauth2/token", {
         method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
         body: new URLSearchParams({
           grant_type: "refresh_token",
           refresh_token: REFRESH_TOKEN,
@@ -20,7 +22,6 @@ const getNewAccessToken = async () => {
           client_secret: CLIENT_SECRET,
         }),
       });
-
       if (!response.ok) throw new Error("Failed to refresh access token");
       const data = await response.json();
       return data.access_token;
@@ -55,9 +56,9 @@ const uploadFileToDropbox = async (
 ) => {
   try {
     const dbx = await initializeDropbox();
-    const fileType = getFileType(mimetype);
-    const dropboxPath = baseDirectory.includes("CourseFiles")
-      ? `/${baseDirectory}/${fileType}/${fileName}`
+    // const fileType = getFileType(mimetype);
+    const dropboxPath = baseDirectory.includes("ProfilePictures")
+      ? `/${baseDirectory}/${fileName}`
       : `/${baseDirectory}/${fileName}`;
 
     // Upload file
@@ -74,8 +75,8 @@ const uploadFileToDropbox = async (
     });
     if (existingLinks.result.links.length > 0) {
       return {
-        name: fileName,
-        url: existingLinks.result.links[0].url.replace("?dl=0", "?raw=1"),
+        fileName,
+        url: existingLinks.result.links[0].url.replace("dl=0", "raw=1"),
       };
     }
 
@@ -84,9 +85,8 @@ const uploadFileToDropbox = async (
       path: response.result.path_lower,
     });
     return {
-      name: fileName,
-      type: fileType.slice(0, -1),
-      url: linkResponse.result.url.replace("?dl=0", "?raw=1"),
+      fileName,
+      url: linkResponse.result.url.replace("dl=0", "raw=1"),
     };
   } catch (error) {
     console.error("Dropbox Upload Error:", error);
@@ -112,12 +112,9 @@ const replaceFileInDropbox = async (
   oldFileName,
   newFileBuffer,
   newFileName,
-  mimetype
 ) => {
   try {
-    const oldFilePath = `/${baseDirectory}/${getFileType(
-      mimetype
-    )}/${oldFileName}`;
+    const oldFilePath = `/${baseDirectory}/${oldFileName}`;
 
     // Delete the old file
     await deleteFileFromDropbox(oldFilePath);
@@ -127,7 +124,6 @@ const replaceFileInDropbox = async (
       baseDirectory,
       newFileBuffer,
       newFileName,
-      mimetype
     );
   } catch (error) {
     console.error("Dropbox Replace Error:", error);

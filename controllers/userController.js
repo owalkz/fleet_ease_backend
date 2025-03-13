@@ -1,4 +1,7 @@
-const { uploadFileToDropbox } = require("../utils/functions/dropboxUpload");
+const {
+  uploadFileToDropbox,
+  replaceFileInDropbox,
+} = require("../utils/functions/dropboxUpload");
 
 const getUserProfile = (req, res, next) => {
   const user = req.user;
@@ -26,28 +29,49 @@ const editUserProfile = async (req, res, next) => {
   try {
     const user = req.user;
     const { name } = req.body;
-    if (!req.file || !name)
-      return res.status(400).json({ error: "No file uploaded or no details modified." });
+    if (!req.file && !name)
+      return res
+        .status(400)
+        .json({ error: "No file uploaded or no details modified." });
     const file = req.file;
 
-    // Upload the file to Dropbox
-    const fileUrl = await uploadFileToDropbox(
-      file.buffer,
-      file.originalname,
-      user._id,
-      file.mimetype
-    );
+    if (file && name) {
+      if (!user.profilePhoto) {
+        // Upload the file to Dropbox
+        const fileUrl = await uploadFileToDropbox(
+          `ProfilePictures/${user.id}`,
+          file.buffer,
+          file.originalname,
+          file.mimetype
+        );
 
-    console.log(fileUrl);
+        user.profilePhoto.url = fileUrl.url || user.profilePhoto.url;
+        user.profilePhoto.fileName =
+          fileUrl.fileName || user.profilePhoto.fileName;
+        user.name = name || user.name;
+      } else {
+        const fileUrl = await replaceFileInDropbox(
+          `ProfilePictures/${user.id}`,
+          user.profilePhoto.fileName,
+          file.buffer,
+          file.originalname
+        );
+        user.profilePhoto.url = fileUrl.url || user.profilePhoto.url;
+        user.profilePhoto.fileName =
+          fileUrl.fileName || user.profilePhoto.fileName;
+        user.name = name || user.name;
+      }
 
-    user.profilePhoto = fileUrl;
-    user.name = name;
+      await user.save();
 
-    await user.save();
-
-    res.status(201).json({
-      message: "Files uploaded successfully",
-    });
+      res.status(201).json({
+        message: "Files uploaded successfully",
+      });
+    } else if (name && !file) {
+      user.name = name || user.name;
+      await user.save();
+      return res.status(201).json({ message: "Name updated successfully!" });
+    }
   } catch (error) {
     console.error("Upload error:", error);
     res.status(500).json({ error: error.message });

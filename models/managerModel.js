@@ -1,4 +1,4 @@
-const bcrypt = require('bcryptjs');
+const bcrypt = require("bcryptjs");
 const Mongoose = require("mongoose");
 
 const ManagerSchema = Mongoose.Schema({
@@ -20,9 +20,15 @@ const ManagerSchema = Mongoose.Schema({
     required: true,
   },
   profilePhoto: {
-    type: String, 
-    required: false,
-  }
+    fileName: {
+      type: String,
+      required: false,
+    },
+    url: {
+      type: String,
+      required: false,
+    },
+  },
 });
 
 ManagerSchema.methods.matchPassword = async function (enteredPassword) {
