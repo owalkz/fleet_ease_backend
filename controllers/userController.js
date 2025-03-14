@@ -36,7 +36,7 @@ const editUserProfile = async (req, res, next) => {
     const file = req.file;
 
     if (file && name) {
-      if (!user.profilePhoto) {
+      if (!user.profilePhoto || user.profilePhoto.url === "") {
         // Upload the file to Dropbox
         const fileUrl = await uploadFileToDropbox(
           `ProfilePictures/${user.id}`,
