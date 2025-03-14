@@ -63,9 +63,10 @@ const editUserProfile = async (req, res, next) => {
       }
 
       await user.save();
-
+      const newUrl = user.profilePhoto.url;
       res.status(201).json({
         message: "Files uploaded successfully",
+        newUrl,
       });
     } else if (name && !file) {
       user.name = name || user.name;
