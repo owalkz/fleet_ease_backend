@@ -15,6 +15,11 @@ const DriverSchema = Mongoose.Schema({
     required: true,
     unique: true,
   },
+  isAssigned: {
+    type: Boolean,
+    required: true,
+    default: false,
+  },
   password: {
     type: String,
     required: true,

@@ -29,4 +29,4 @@ app.listen(PORT, () => {
 app.use("/api/auth", require("./routes/authRoutes"));
 app.use("/api/users", require("./routes/userRoutes")(upload));
 app.use("/api/trips", require("./routes/tripRoutes"));
-app.use("/api/vehicles", require("./routes/vehicleRoutes"));
+app.use("/api/vehicles", require("./routes/vehicleRoutes")(upload));
