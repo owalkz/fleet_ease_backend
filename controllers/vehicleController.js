@@ -27,6 +27,7 @@ const createVehicle = async (req, res) => {
 
     const manager = await isManager(req.user);
     if (!manager) return res.status(403).json({ message: "Unauthorized" });
+    const managerId = req.user._id;
 
     // Check if license plate already exists
     const existingVehicle = await Vehicle.findOne({ licensePlateNumber });
