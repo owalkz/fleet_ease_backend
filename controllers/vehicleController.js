@@ -153,7 +153,7 @@ const getAllVehicles = async (req, res) => {
   try {
     const vehicles = await Vehicle.find({
       managerId: req.params.managerId,
-    }).populate("assignedDriverId");
+    }).populate("assignedDriverId", "name");
     res.status(200).json(vehicles);
   } catch (error) {
     res.status(500).json({ message: "Error fetching vehicles", error });
