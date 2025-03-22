@@ -71,7 +71,7 @@ const getAvailableDrivers = async (req, res) => {
     if (!manager) return res.status(403).json({ message: "Unauthorized" });
 
     const availableDrivers = await Driver.find({
-      assignedVehicleId: null,
+      isAssigned: false,
     }).select("-password");
 
     res.status(200).json(availableDrivers);
