@@ -1,3 +1,5 @@
+const Driver = require("../models/driverModel");
+const Manager = require("../models/managerModel");
 const {
   uploadFileToDropbox,
   replaceFileInDropbox,
@@ -63,7 +65,25 @@ const editUserProfile = async (req, res, next) => {
   }
 };
 
+const getAvailableDrivers = async (req, res) => {
+  try {
+    const manager = await Manager.findById(req.user._id);
+    if (!manager) return res.status(403).json({ message: "Unauthorized" });
+
+    const availableDrivers = await Driver.find({
+      assignedVehicleId: null,
+    }).select("-password");
+
+    res.status(200).json(availableDrivers);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error fetching available drivers", error });
+  }
+};
+
 module.exports = {
   getUserProfile,
   editUserProfile,
+  getAvailableDrivers,
 };
