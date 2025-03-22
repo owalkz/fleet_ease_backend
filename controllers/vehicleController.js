@@ -137,7 +137,7 @@ const deleteVehicle = async (req, res) => {
     // Delete associated image from Dropbox
     if (vehicle.image && vehicle.image.name) {
       await deleteFileFromDropbox(
-        `/VehicleImages/${vehicle.licensePlateNumber}/${vehicle.image.name}}`
+        `/VehicleImages/${vehicle.licensePlateNumber}/${vehicle.image.name}`
       );
     }
 
