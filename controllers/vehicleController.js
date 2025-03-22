@@ -1,6 +1,6 @@
 const Vehicle = require("../models/vehicleModel");
 const Driver = require("../models/driverModel");
-const Manager = require("../models/managerModel");
+const { isManager } = require("../utils/functions/authFunctions");
 const {
   uploadFileToDropbox,
   replaceFileInDropbox,
@@ -202,6 +202,7 @@ const assignDriverToVehicle = async (req, res) => {
       const previousDriver = await Driver.findById(vehicle.assignedDriverId);
       if (previousDriver) {
         previousDriver.isAssigned = false;
+        previousDriver.assignedVehicle = null;
         await previousDriver.save();
       }
     }
@@ -209,6 +210,7 @@ const assignDriverToVehicle = async (req, res) => {
     // Assign new driver
     vehicle.assignedDriverId = driverId;
     driver.isAssigned = true;
+    driver.assignedVehicle = vehicle._id;
 
     await vehicle.save();
     await driver.save();
@@ -241,6 +243,7 @@ const unassignDriverFromVehicle = async (req, res) => {
       const driver = await Driver.findById(vehicle.assignedDriverId);
       if (driver) {
         driver.isAssigned = false;
+        driver.assignedVehicle = null;
         await driver.save();
       }
     }
@@ -254,14 +257,6 @@ const unassignDriverFromVehicle = async (req, res) => {
       .json({ message: "Driver unassigned successfully!", vehicle });
   } catch (error) {
     res.status(500).json({ message: "Error unassigning driver", error });
-  }
-};
-
-const isManager = async (user) => {
-  if (await Manager.findById(user._id)) {
-    return true;
-  } else {
-    return false;
   }
 };
 

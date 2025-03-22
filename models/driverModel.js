@@ -1,4 +1,4 @@
-const bcrypt = require('bcryptjs');
+const bcrypt = require("bcryptjs");
 const Mongoose = require("mongoose");
 
 const DriverSchema = Mongoose.Schema({
@@ -19,6 +19,16 @@ const DriverSchema = Mongoose.Schema({
     type: Boolean,
     required: true,
     default: false,
+  },
+  assignedVehicle: {
+    type: Mongoose.Schema.Types.ObjectId,
+    ref: "Vehicle",
+    default: null,
+  },
+  managerId: {
+    type: Mongoose.Schema.Types.ObjectId,
+    ref: "Manager",
+    default: null,
   },
   password: {
     type: String,

@@ -7,6 +7,22 @@ const checkEmailExists = async (emailAddress) => {
   return driver || manager;
 };
 
+const isManager = async (id) => {
+  if (await Manager.findById(id)) {
+    return true;
+  } else {
+    return false;
+  }
+};
+
+const isDriver = async (id) => {
+  if (await Driver.findById(id)) {
+    return true;
+  } else {
+    return false;
+  }
+};
+
 const checkIdExists = async (id) => {
   const driver = await Driver.findById(id);
   const manager = await Manager.findById(id);
@@ -33,6 +49,8 @@ const createUser = async (Model, role, email, name, hashedPassword, res) => {
 };
 
 module.exports = {
+  isDriver,
+  isManager,
   createUser,
   checkEmailExists,
   checkIdExists,
