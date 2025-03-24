@@ -1,6 +1,11 @@
 const Mongoose = require("mongoose");
 
 const tripSchema = Mongoose.Schema({
+  managerId: {
+    type: Mongoose.Schema.Types.ObjectId,
+    ref: "Manager",
+    required: true,
+  },
   driverId: {
     type: Mongoose.Schema.Types.ObjectId,
     ref: "Driver",
@@ -19,6 +24,12 @@ const tripSchema = Mongoose.Schema({
     latitude: { type: Number },
     longitude: { type: Number },
   },
+  destination: {
+    latitude: { type: Number, required: true },
+    longitude: { type: Number, required: true },
+    address: { type: String },
+  },
+  deadline: { type: Date, required: true },
   startTime: { type: Date, default: Date.now },
   endTime: { type: Date },
   distanceTraveled: { type: Number, default: 0 },
@@ -31,7 +42,11 @@ const tripSchema = Mongoose.Schema({
       eventType: { type: String, default: "" },
     },
   ],
-  status: { type: String, enum: ["active", "completed"], default: "active" },
+  status: {
+    type: String,
+    enum: ["pending", "active", "completed"],
+    default: "pending",
+  },
 });
 
 const Trip = Mongoose.model("Trip", tripSchema);
