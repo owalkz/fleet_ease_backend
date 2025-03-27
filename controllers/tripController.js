@@ -236,7 +236,7 @@ const getDriverTrips = async (req, res) => {
       status: { $ne: "completed" },
     })
       .populate("vehicleId", "make model licensePlateNumber")
-      .populate("driverId", "name email");
+      .populate("driverId", "name emailAddress");
 
     res.status(200).json(trips);
   } catch (error) {
@@ -253,7 +253,7 @@ const getCompletedTrips = async (req, res) => {
       status: "completed",
     })
       .populate("vehicleId", "make model licensePlateNumber")
-      .populate("driverId", "name email");
+      .populate("driverId", "name emailAddress");
 
     res.status(200).json(trips);
   } catch (error) {
@@ -265,7 +265,7 @@ const getPendingTrips = async (req, res) => {
   try {
     const { managerId } = req.params;
     const trips = await Trip.find({ managerId, status: "pending" })
-      .populate("driverId", "name email")
+      .populate("driverId", "name emailAddress")
       .populate("vehicleId", "make model licensePlateNumber");
 
     res.status(200).json(trips);
@@ -283,7 +283,7 @@ const getTripsApproachingDeadline = async (req, res) => {
       status: "active",
       deadline: { $lte: new Date(now.getTime() + 24 * 60 * 60 * 1000) }, // ✅ Trips within 24 hours
     })
-      .populate("driverId", "name email")
+      .populate("driverId", "name emailAddress")
       .populate("vehicleId", "make model licensePlateNumber");
 
     res.status(200).json(upcomingTrips);
