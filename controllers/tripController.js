@@ -219,7 +219,7 @@ const getManagerTrips = async (req, res) => {
   try {
     const managerId = req.params.managerId;
     const trips = await Trip.find({ managerId })
-      .populate("driverId", "name email")
+      .populate("driverId", "name emailAddress")
       .populate("vehicleId", "make model licensePlateNumber");
 
     res.status(200).json(trips);
