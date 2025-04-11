@@ -66,6 +66,7 @@ const getAvailableDrivers = async (req, res) => {
 
     res.status(200).json(filteredDrivers);
   } catch (error) {
+    console.log(error);
     res
       .status(500)
       .json({ message: "Error fetching available drivers", error });
