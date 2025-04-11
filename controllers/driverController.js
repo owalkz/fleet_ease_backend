@@ -61,10 +61,7 @@ const getAvailableDrivers = async (req, res) => {
     }).select("-password");
 
     const filteredDrivers = availableDrivers.filter(
-      (driver) => {
-        if (driver.managerId) driver.managerId.toString() === req.user._id.toString();
-        return driver;
-      }
+      (driver) => driver.managerId?.toString() === req.user._id.toString()
     );
 
     res.status(200).json(filteredDrivers);
