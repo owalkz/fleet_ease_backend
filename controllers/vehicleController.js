@@ -160,12 +160,12 @@ const getAllVehicles = async (req, res) => {
   }
 };
 
-// ✅ Get a single vehicle by ID
 const getVehicle = async (req, res) => {
   try {
-    const vehicle = await Vehicle.findById(req.params.id).populate(
-      "assignedDriverId"
-    );
+    const driverId = req.user._id;
+    const driver = await Driver.findById(driverId);
+
+    const vehicle = await Vehicle.findById(driver.assignedVehicle);
     if (!vehicle)
       return res.status(404).json({ message: "Vehicle not found!" });
 

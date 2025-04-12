@@ -12,8 +12,8 @@ const protect = require("../middleware/authMiddleware");
 
 module.exports = (upload) => {
   const router = express.Router();
+  router.get("/vehicle", protect, getVehicle);
   router.get("/:managerId", protect, getAllVehicles);
-  router.get("/vehicle/:id", protect, getVehicle);
   router.put("/:id", protect, upload.single("file"), updateVehicle);
   router.post("/create-vehicle", protect, upload.single("file"), createVehicle);
   router.post("/assign", protect, assignDriverToVehicle);
