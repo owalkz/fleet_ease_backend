@@ -16,7 +16,7 @@ const editUserProfile = async (req, res, next) => {
     const user = req.user;
     const { name, licenseExpiryDate } = req.body;
     const file = req.file;
-    console.log(licenseExpiryDate);
+    console.log(user.role);
 
     if (!file && !name && !licenseExpiryDate) {
       return res
