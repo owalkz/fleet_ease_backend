@@ -14,14 +14,17 @@ const getUserProfile = (req, res, next) => {
 const editUserProfile = async (req, res, next) => {
   try {
     const user = req.user;
-    const { name } = req.body;
-    if (!req.file && !name)
+    const { name, licenseExpiryDate } = req.body;
+    const file = req.file;
+
+    if (!file && !name && !licenseExpiryDate) {
       return res
         .status(400)
         .json({ error: "No file uploaded or no details modified." });
-    const file = req.file;
+    }
 
-    if (file && name) {
+    // 📦 If file and name (and/or licenseExpiryDate) are provided
+    if (file) {
       if (!user.profilePhoto || user.profilePhoto.url === "") {
         // Upload the file to Dropbox
         const fileUrl = await uploadFileToDropbox(
@@ -34,31 +37,36 @@ const editUserProfile = async (req, res, next) => {
         user.profilePhoto.url = fileUrl.url || user.profilePhoto.url;
         user.profilePhoto.fileName =
           fileUrl.fileName || user.profilePhoto.fileName;
-        user.name = name || user.name;
       } else {
+        // Replace the file in Dropbox
         const fileUrl = await replaceFileInDropbox(
           `ProfilePictures/${user.id}`,
           user.profilePhoto.fileName,
           file.buffer,
           file.originalname
         );
+
         user.profilePhoto.url = fileUrl.url || user.profilePhoto.url;
         user.profilePhoto.fileName =
           fileUrl.fileName || user.profilePhoto.fileName;
-        user.name = name || user.name;
       }
-
-      await user.save();
-      const newUrl = user.profilePhoto.url;
-      res.status(201).json({
-        message: "Files uploaded successfully",
-        newUrl,
-      });
-    } else if (name && !file) {
-      user.name = name || user.name;
-      await user.save();
-      return res.status(201).json({ message: "Name updated successfully!" });
     }
+
+    // ✏️ Update name if provided
+    if (name) user.name = name;
+
+    // 📆 Update licenseExpiryDate if provided and user is a driver
+    if (licenseExpiryDate && user.role === "driver") {
+      user.licenseExpiryDate = new Date(licenseExpiryDate);
+    }
+
+    await user.save();
+
+    const newUrl = user.profilePhoto?.url || null;
+    res.status(201).json({
+      message: "Profile updated successfully!",
+      newUrl,
+    });
   } catch (error) {
     console.error("Upload error:", error);
     res.status(500).json({ error: error.message });
