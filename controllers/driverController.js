@@ -58,6 +58,7 @@ const getAvailableDrivers = async (req, res) => {
 
     const availableDrivers = await Driver.find({
       isAssigned: false,
+      accountStatus: { $ne: "inactive" }, // 🔒 exclude inactive
     }).select("-password");
 
     const filteredDrivers = availableDrivers.filter(
@@ -80,15 +81,14 @@ const getDriversByManager = async (req, res) => {
     if (!manager) return res.status(403).json({ message: "Unauthorized" });
 
     const { managerId } = req.params;
-    const drivers = await Driver.find()
+    const drivers = await Driver.find({
+      managerId,
+      accountStatus: { $ne: "inactive" }, // 🔒 exclude inactive
+    })
       .populate("assignedVehicle")
       .select("-password");
 
-    const filteredDrivers = drivers.filter(
-      (driver) => driver.managerId?.toString() === managerId
-    );
-
-    res.status(200).json(filteredDrivers);
+    res.status(200).json(drivers);
   } catch (error) {
     res.status(500).json({ message: "Error fetching drivers", error });
   }
@@ -101,10 +101,13 @@ const getDriverVehicle = async (req, res) => {
     if (!drv) return res.status(403).json({ message: "Unauthorized" });
 
     const { driverId } = req.params;
-    const driver = await Driver.findById(driverId).populate("assignedVehicle");
+    const driver = await Driver.findOne({
+      _id: driverId,
+      accountStatus: { $ne: "inactive" }, // 🔒 safeguard
+    }).populate("assignedVehicle");
 
     if (!driver) {
-      return res.status(404).json({ message: "Driver not found" });
+      return res.status(404).json({ message: "Driver not found or inactive" });
     }
 
     if (!driver.assignedVehicle) {
@@ -122,7 +125,11 @@ const getUnassignedDrivers = async (req, res) => {
     const manager = await isManager(req.user);
     if (!manager) return res.status(403).json({ message: "Unauthorized" });
 
-    const drivers = await Driver.find({ managerId: null }).select("-password");
+    const drivers = await Driver.find({
+      managerId: null,
+      accountStatus: { $ne: "inactive" }, // 🔒 exclude inactive
+    }).select("-password");
+
     res.status(200).json(drivers);
   } catch (error) {
     res
