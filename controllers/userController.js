@@ -16,7 +16,6 @@ const editUserProfile = async (req, res, next) => {
     const user = req.user;
     const { name, licenseExpiryDate } = req.body;
     const file = req.file;
-    console.log(user.role);
 
     if (!file && !name && !licenseExpiryDate) {
       return res
@@ -57,7 +56,7 @@ const editUserProfile = async (req, res, next) => {
     if (name) user.name = name;
 
     // 📆 Update licenseExpiryDate if provided and user is a driver
-    if (licenseExpiryDate && user.role === "driver") {
+    if (licenseExpiryDate && user.accountType === "driver") {
       user.licenseExpiryDate = new Date(licenseExpiryDate);
     }
 
