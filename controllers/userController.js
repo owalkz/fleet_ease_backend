@@ -1,3 +1,5 @@
+const Vehicle = require("../models/vehicleModel");
+const Trip = require("../models/tripModel");
 const Driver = require("../models/driverModel");
 const Manager = require("../models/managerModel");
 const {
@@ -73,7 +75,73 @@ const editUserProfile = async (req, res, next) => {
   }
 };
 
+const deactivateDriverAccount = async (req, res) => {
+  try {
+    const driverId = req.user._id;
+
+    // 1. Ensure no pending or active trips
+    const pendingTrips = await Trip.find({
+      driverId,
+      status: { $in: ["pending", "active"] },
+    });
+
+    if (pendingTrips.length > 0) {
+      return res.status(400).json({
+        message: "You have pending or active trips. Complete them first.",
+      });
+    }
+
+    // 2. Unassign from any vehicle
+    const vehicle = await Vehicle.findOne({ assignedDriverId: driverId });
+    if (vehicle) {
+      vehicle.assignedDriverId = null;
+      await vehicle.save();
+    }
+
+    // 3. Remove driver from manager's company
+    const driver = await Driver.findById(driverId);
+    if (!driver) {
+      return res.status(404).json({ message: "Driver not found." });
+    }
+
+    driver.managerId = null;
+    driver.isAssigned = false;
+    driver.accountStatus = "inactive";
+    await driver.save();
+
+    res.status(200).json({ message: "Account deactivated successfully." });
+  } catch (error) {
+    console.error("Deactivation error:", error);
+    res.status(500).json({ message: "Internal server error", error });
+  }
+};
+
+const reactivateAccount = async (req, res) => {
+  try {
+    const user = req.user;
+
+    // Only allow drivers to reactivate themselves
+    if (user.accountType !== "driver") {
+      return res.status(403).json({ message: "Only drivers can reactivate their accounts" });
+    }
+
+    if (user.accountStatus === "active") {
+      return res.status(400).json({ message: "Account is already active" });
+    }
+
+    user.accountStatus = "active";
+    await user.save();
+
+    res.status(200).json({ message: "Account reactivated successfully" });
+  } catch (error) {
+    console.error("Error reactivating account:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
 module.exports = {
   getUserProfile,
   editUserProfile,
+  deactivateDriverAccount,
+  reactivateAccount,
 };

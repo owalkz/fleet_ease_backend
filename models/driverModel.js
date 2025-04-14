@@ -10,6 +10,11 @@ const DriverSchema = Mongoose.Schema({
     type: String,
     required: true,
   },
+  accountStatus: {
+    type: String,
+    enum: ["active", "inactive"],
+    default: "active",
+  },
   emailAddress: {
     type: String,
     required: true,
