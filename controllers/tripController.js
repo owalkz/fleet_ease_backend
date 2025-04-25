@@ -1,6 +1,7 @@
 const Vehicle = require("../models/vehicleModel");
 const Driver = require("../models/driverModel");
 const Trip = require("../models/tripModel");
+const { isManager } = require("../utils/functions/authFunctions");
 const haversineDistance = require("../utils/functions/distanceCalculator");
 
 const createTrip = async (req, res) => {
@@ -361,6 +362,55 @@ const getTripSummaryOverTime = async (req, res) => {
   }
 };
 
+const getManagerSummary = async (req, res) => {
+  try {
+    const manager = await isManager(req.user);
+    if (!manager) return res.status(403).json({ message: "Unauthorized" });
+
+    const managerId = req.user._id;
+
+    // Count drivers under this manager
+    const totalDrivers = await Driver.countDocuments({ managerId, accountStatus: 'active' });
+
+    // Get all vehicles
+    const vehicles = await Vehicle.find({ managerId });
+
+    const totalVehicles = vehicles.length;
+    const vehiclesInUse = vehicles.filter(v => v.status === "in use").length;
+    const availableVehicles = totalVehicles - vehiclesInUse;
+
+    // Get all trips by this manager
+    const trips = await Trip.find({ managerId });
+
+    const totalTrips = trips.length;
+    const pendingTrips = trips.filter(t => t.status === "pending").length;
+    const activeTrips = trips.filter(t => t.status === "active").length;
+    const completedTrips = trips.filter(t => t.status === "completed").length;
+
+    const totalDistance = trips.reduce((sum, t) => {
+      if (t.status === "completed" && typeof t.distanceTraveled === "number") {
+        return sum + t.distanceTraveled;
+      }
+      return sum;
+    }, 0);
+
+    res.status(200).json({
+      totalDrivers,
+      totalVehicles,
+      vehiclesInUse,
+      availableVehicles,
+      totalTrips,
+      pendingTrips,
+      activeTrips,
+      completedTrips,
+      totalDistance: +totalDistance.toFixed(2),
+    });
+  } catch (error) {
+    console.error("Error fetching manager summary:", error);
+    res.status(500).json({ message: "Internal Server Error", error });
+  }
+};
+
 module.exports = {
   createTrip,
   startTrip,
@@ -375,4 +425,5 @@ module.exports = {
   getCompletedTrips,
   getDriverTripSummary,
   getTripSummaryOverTime,
+  getManagerSummary,
 };
