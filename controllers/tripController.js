@@ -192,6 +192,9 @@ const deleteTrip = async (req, res) => {
 const endTrip = async (req, res, next) => {
   try {
     const tripId = req.params.id;
+    const { finalMileage } = req.body; // 🆕 Get final mileage from request
+    const userId = req.user._id;
+
     const trip = await Trip.findById(tripId);
     if (!trip || trip.status !== "active") {
       return res
@@ -199,19 +202,34 @@ const endTrip = async (req, res, next) => {
         .json({ message: "Trip not found or already completed" });
     }
 
+    const vehicle = await Vehicle.findById(trip.vehicleId);
+    if (!vehicle) {
+      return res.status(404).json({ message: "Vehicle not found" });
+    }
+
+    // ✅ Validate mileage
+    if (finalMileage && finalMileage > vehicle.mileage) {
+      vehicle.mileage = finalMileage;
+      vehicle.lastMileageUpdateDate = new Date();
+      vehicle.mileageLogs = vehicle.mileageLogs || [];
+      vehicle.mileageLogs.push({
+        tripId,
+        mileage: finalMileage,
+        updatedBy: userId,
+      });
+    }
+
     trip.endTime = new Date();
     trip.status = "completed";
 
-    // ✅ Set vehicle status back to "Available"
-    const vehicle = await Vehicle.findById(trip.vehicleId);
-    if (vehicle) {
-      vehicle.status = "Available";
-      await vehicle.save();
-    }
+    vehicle.status = "Available";
 
     await trip.save();
-    return res.status(200).json({ message: "Trip ended successfully!" });
+    await vehicle.save();
+
+    return res.status(200).json({ message: "Trip ended and mileage updated!" });
   } catch (error) {
+    console.error("Error ending trip:", error);
     return res.status(500).json({ message: "Error ending trip" });
   }
 };
@@ -370,22 +388,25 @@ const getManagerSummary = async (req, res) => {
     const managerId = req.user._id;
 
     // Count drivers under this manager
-    const totalDrivers = await Driver.countDocuments({ managerId, accountStatus: 'active' });
+    const totalDrivers = await Driver.countDocuments({
+      managerId,
+      accountStatus: "active",
+    });
 
     // Get all vehicles
     const vehicles = await Vehicle.find({ managerId });
 
     const totalVehicles = vehicles.length;
-    const vehiclesInUse = vehicles.filter(v => v.status === "in use").length;
+    const vehiclesInUse = vehicles.filter((v) => v.status === "in use").length;
     const availableVehicles = totalVehicles - vehiclesInUse;
 
     // Get all trips by this manager
     const trips = await Trip.find({ managerId });
 
     const totalTrips = trips.length;
-    const pendingTrips = trips.filter(t => t.status === "pending").length;
-    const activeTrips = trips.filter(t => t.status === "active").length;
-    const completedTrips = trips.filter(t => t.status === "completed").length;
+    const pendingTrips = trips.filter((t) => t.status === "pending").length;
+    const activeTrips = trips.filter((t) => t.status === "active").length;
+    const completedTrips = trips.filter((t) => t.status === "completed").length;
 
     const totalDistance = trips.reduce((sum, t) => {
       if (t.status === "completed" && typeof t.distanceTraveled === "number") {

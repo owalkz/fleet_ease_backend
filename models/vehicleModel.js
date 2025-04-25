@@ -28,6 +28,15 @@ const VehicleSchema = new Mongoose.Schema({
     name: { type: String },
     url: { type: String },
   },
+  lastMileageUpdateDate: { type: Date },
+  mileageLogs: [
+    {
+      tripId: { type: Mongoose.Schema.Types.ObjectId, ref: "Trip" },
+      mileage: Number,
+      updatedBy: { type: Mongoose.Schema.Types.ObjectId, ref: "Driver" },
+      date: { type: Date, default: Date.now },
+    },
+  ],
   serviceDates: { type: [Date], required: true },
   insuranceExpiryDate: { type: Date },
   status: {
