@@ -326,6 +326,41 @@ const getDriverTripSummary = async (req, res) => {
   }
 };
 
+const getTripSummaryOverTime = async (req, res) => {
+  try {
+    const { driverId } = req.params;
+
+    // Only fetch completed trips
+    const trips = await Trip.find({
+      driverId,
+      status: "completed",
+    });
+
+    // Group data by date
+    const summary = {};
+    trips.forEach((trip) => {
+      const date = trip.endTime.toISOString().split("T")[0]; // YYYY-MM-DD
+      if (!summary[date]) {
+        summary[date] = { count: 0, distance: 0 };
+      }
+      summary[date].count += 1;
+      summary[date].distance += trip.distanceTraveled;
+    });
+
+    // Format for frontend
+    const data = Object.entries(summary).map(([date, values]) => ({
+      date,
+      tripCount: values.count,
+      distance: values.distance,
+    }));
+
+    res.status(200).json(data);
+  } catch (error) {
+    console.error("Error fetching summary:", error);
+    res.status(500).json({ message: "Failed to fetch trip summary", error });
+  }
+};
+
 module.exports = {
   createTrip,
   startTrip,
@@ -339,4 +374,5 @@ module.exports = {
   getDriverTrips,
   getCompletedTrips,
   getDriverTripSummary,
+  getTripSummaryOverTime,
 };
