@@ -13,6 +13,7 @@ const {
   getCompletedTrips,
   getPendingTrips,
   getTripsApproachingDeadline,
+  getDriverTripSummary,
 } = require("../controllers/tripController");
 
 router.get("/manager/:managerId", protect, getManagerTrips);
@@ -24,6 +25,7 @@ router.get(
   protect,
   getTripsApproachingDeadline
 );
+router.get("/driver-summary/:driverId", protect, getDriverTripSummary);
 router.post("/create-trip", protect, createTrip);
 router.post("/start-trip/:tripId", protect, startTrip);
 router.put("/end-trip/:id", protect, endTrip);

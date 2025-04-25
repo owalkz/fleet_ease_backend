@@ -294,6 +294,38 @@ const getTripsApproachingDeadline = async (req, res) => {
   }
 };
 
+const getDriverTripSummary = async (req, res) => {
+  try {
+    const driver = await Driver.findById(req.user._id);
+    if (!driver) return res.status(403).json({ message: "Unauthorized" });
+
+    const { driverId } = req.params;
+
+    const trips = await Trip.find({ driverId });
+
+    const totalTrips = trips.length;
+    const pendingTrips = trips.filter((t) => t.status === "pending").length;
+    const activeTrips = trips.filter((t) => t.status === "active").length;
+    const completedTrips = trips.filter((t) => t.status === "completed").length;
+
+    const totalDistance = trips.reduce(
+      (sum, t) => sum + (t.distanceTraveled || 0),
+      0
+    );
+
+    res.status(200).json({
+      totalTrips,
+      pendingTrips,
+      activeTrips,
+      completedTrips,
+      totalDistance: Number(totalDistance.toFixed(2)), // In km
+    });
+  } catch (error) {
+    console.error("Trip Summary Error:", error);
+    res.status(500).json({ message: "Error fetching trip summary", error });
+  }
+};
+
 module.exports = {
   createTrip,
   startTrip,
@@ -306,4 +338,5 @@ module.exports = {
   getManagerTrips,
   getDriverTrips,
   getCompletedTrips,
+  getDriverTripSummary,
 };
