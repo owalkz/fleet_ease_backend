@@ -16,13 +16,13 @@ const {
   getDriverTripSummary,
   getTripSummaryOverTime,
   getManagerSummary,
-  getTrip
+  getTrip,
 } = require("../controllers/tripController");
 
 router.get("/summary", protect, getManagerSummary);
 router.post("/create-trip", protect, createTrip);
 router.get("/getTrip/:tripId", protect, getTrip);
-router.get("/manager/:managerId", protect, getManagerTrips);
+router.get("/manager", protect, getManagerTrips);
 router.get("/driver/:driverId", protect, getDriverTrips);
 router.get("/completed/:userId", protect, getCompletedTrips);
 router.get("/pending/:managerId", protect, getPendingTrips);

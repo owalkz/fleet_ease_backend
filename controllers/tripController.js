@@ -236,7 +236,8 @@ const endTrip = async (req, res, next) => {
 
 const getManagerTrips = async (req, res) => {
   try {
-    const managerId = req.params.managerId;
+    const managerId = req.user._id;
+    if (!isManager) res.status(403).json({ message: "Forbidden!" });
     const trips = await Trip.find({ managerId })
       .populate("driverId", "name emailAddress")
       .populate("vehicleId", "make model licensePlateNumber");
@@ -290,6 +291,7 @@ const getTrip = async (req, res) => {
 
     res.status(200).json(trip);
   } catch (error) {
+    console.log(error);
     res.status(500).json({ message: "Error fetching completed trips", error });
   }
 };
