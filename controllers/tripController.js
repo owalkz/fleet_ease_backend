@@ -280,6 +280,20 @@ const getCompletedTrips = async (req, res) => {
   }
 };
 
+const getTrip = async (req, res) => {
+  try {
+    const tripId = req.params.tripId;
+
+    const trip = await Trip.findById(tripId)
+      .populate("vehicleId", "make model licensePlateNumber")
+      .populate("driverId", "name emailAddress");
+
+    res.status(200).json(trip);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching completed trips", error });
+  }
+};
+
 const getPendingTrips = async (req, res) => {
   try {
     const { managerId } = req.params;
@@ -447,4 +461,5 @@ module.exports = {
   getDriverTripSummary,
   getTripSummaryOverTime,
   getManagerSummary,
+  getTrip,
 };
