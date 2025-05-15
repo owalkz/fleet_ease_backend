@@ -31,3 +31,5 @@ app.use("/api/users", require("./routes/userRoutes")(upload));
 app.use("/api/trips", require("./routes/tripRoutes"));
 app.use("/api/drivers", require("./routes/driverRoutes"));
 app.use("/api/vehicles", require("./routes/vehicleRoutes")(upload));
+app.use("/api/reports", require("./routes/reportRoutes"));
+app.use("/api/ai", require("./routes/aiRoutes"));

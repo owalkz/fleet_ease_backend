@@ -56,40 +56,43 @@ const getAvailableDrivers = async (req, res) => {
     const manager = await isManager(req.user);
     if (!manager) return res.status(403).json({ message: "Unauthorized" });
 
+    const today = new Date();
+
     const availableDrivers = await Driver.find({
       isAssigned: false,
-      accountStatus: { $ne: "inactive" }, // 🔒 exclude inactive
+      accountStatus: { $ne: "inactive" },
+      licenseExpiryDate: { $gt: today }, // ✅ only licenses that are still valid
+      managerId: req.user._id, // ✅ include manager filter in DB query
     }).select("-password");
 
-    const filteredDrivers = availableDrivers.filter(
-      (driver) => driver.managerId?.toString() === req.user._id.toString()
-    );
-
-    res.status(200).json(filteredDrivers);
+    res.status(200).json(availableDrivers);
   } catch (error) {
-    console.log(error);
+    console.error(error);
     res
       .status(500)
       .json({ message: "Error fetching available drivers", error });
   }
 };
 
-// ✅ Fetch all drivers under a manager
 const getDriversByManager = async (req, res) => {
   try {
     const manager = await isManager(req.user);
     if (!manager) return res.status(403).json({ message: "Unauthorized" });
 
     const { managerId } = req.params;
+    const today = new Date();
+
     const drivers = await Driver.find({
       managerId,
-      accountStatus: { $ne: "inactive" }, // 🔒 exclude inactive
+      accountStatus: { $ne: "inactive" },
+      licenseExpiryDate: { $gt: today }, // ✅ only valid licenses
     })
       .populate("assignedVehicle")
       .select("-password");
 
     res.status(200).json(drivers);
   } catch (error) {
+    console.error(error);
     res.status(500).json({ message: "Error fetching drivers", error });
   }
 };

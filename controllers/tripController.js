@@ -253,7 +253,6 @@ const getDriverTrips = async (req, res) => {
     const driverId = req.params.driverId;
     const trips = await Trip.find({
       driverId,
-      status: { $ne: "completed" },
     })
       .populate("vehicleId", "make model licensePlateNumber")
       .populate("driverId", "name emailAddress");
@@ -291,7 +290,6 @@ const getTrip = async (req, res) => {
 
     res.status(200).json(trip);
   } catch (error) {
-    console.log(error);
     res.status(500).json({ message: "Error fetching completed trips", error });
   }
 };
