@@ -8,7 +8,7 @@ const notificationSchema = new mongoose.Schema(
     },
     recipientType: {
       type: String,
-      enum: ["Driver", "Manager"],
+      enum: ["driver", "manager"],
       required: true,
     },
     message: {
