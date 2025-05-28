@@ -1,8 +1,8 @@
 const Notification = require("../models/notificationModel");
 
 const getNotifications = async (req, res) => {
-  const { userId } = req.params;
-  const { type } = req.query;
+  // const { userId } = req.params;
+  const { type, userId } = req.query;
 
   try {
     const notifications = await Notification.find({
