@@ -1,6 +1,7 @@
 const Vehicle = require("../models/vehicleModel");
 const Driver = require("../models/driverModel");
 const Trip = require("../models/tripModel");
+const sendNotification = require("../utils/functions/sendNotification");
 const { isManager } = require("../utils/functions/authFunctions");
 const haversineDistance = require("../utils/functions/distanceCalculator");
 
@@ -34,6 +35,11 @@ const createTrip = async (req, res) => {
     });
 
     await newTrip.save();
+    await sendNotification({
+      recipientId: driverId,
+      recipientType: "Driver",
+      message: "You've been assigned a new trip.",
+    });
     res
       .status(201)
       .json({ message: "Trip created successfully!", trip: newTrip });
@@ -226,6 +232,11 @@ const endTrip = async (req, res, next) => {
 
     await trip.save();
     await vehicle.save();
+    await sendNotification({
+      recipientId: trip.managerId,
+      recipientType: "Manager",
+      message: `Trip completed by driver.`,
+    });
 
     return res.status(200).json({ message: "Trip ended and mileage updated!" });
   } catch (error) {

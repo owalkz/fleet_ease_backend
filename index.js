@@ -7,10 +7,11 @@ const PORT = process.env.PORT || 5000;
 const corsOptions = {
   origin: [process.env.CLIENT_URL, "http://localhost:5173"],
   credentials: true,
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
   allowedHeaders: ["Content-Type", "Authorization"],
 };
 dotenv.config();
+require("./utils/functions/scheduler");
 app.use(express.json());
 app.use(cors(corsOptions));
 
@@ -33,3 +34,4 @@ app.use("/api/drivers", require("./routes/driverRoutes"));
 app.use("/api/vehicles", require("./routes/vehicleRoutes")(upload));
 app.use("/api/reports", require("./routes/reportRoutes"));
 app.use("/api/ai", require("./routes/aiRoutes"));
+app.use("/api/notifications", require("./routes/notificationRoutes"));
