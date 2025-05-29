@@ -37,8 +37,8 @@ const createTrip = async (req, res) => {
     await newTrip.save();
     await sendNotification({
       recipientId: driverId,
-      recipientType: "Driver",
-      message: "You've been assigned a new trip.",
+      recipientType: "driver",
+      message: `You've been assigned a new trip to ${destination}.`,
     });
     res
       .status(201)
@@ -200,6 +200,7 @@ const endTrip = async (req, res, next) => {
     const tripId = req.params.id;
     const { finalMileage } = req.body; // 🆕 Get final mileage from request
     const userId = req.user._id;
+    const driver = await Driver.findById(userId);
 
     const trip = await Trip.findById(tripId);
     if (!trip || trip.status !== "active") {
@@ -234,8 +235,8 @@ const endTrip = async (req, res, next) => {
     await vehicle.save();
     await sendNotification({
       recipientId: trip.managerId,
-      recipientType: "Manager",
-      message: `Trip completed by driver.`,
+      recipientType: "manager",
+      message: `Trip completed by driver ${driver.name} to ${trip.destination}.`,
     });
 
     return res.status(200).json({ message: "Trip ended and mileage updated!" });

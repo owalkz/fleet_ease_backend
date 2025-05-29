@@ -13,7 +13,7 @@ const notifyLicenseExpiry = async () => {
   for (const driver of drivers) {
     await sendNotification({
       recipientId: driver._id,
-      recipientType: "Driver",
+      recipientType: "driver",
       message: "Your license is about to expire. Please renew it soon.",
     });
   }
@@ -30,7 +30,7 @@ const notifyInsuranceExpiry = async () => {
   for (const vehicle of vehicles) {
     await sendNotification({
       recipientId: vehicle.managerId,
-      recipientType: "Manager",
+      recipientType: "manager",
       message: `Insurance for vehicle ${vehicle.licensePlateNumber} is expiring soon.`,
     });
   }
@@ -47,14 +47,14 @@ const notifyServiceDue = async () => {
       // Notify manager
       await sendNotification({
         recipientId: vehicle.managerId,
-        recipientType: "Manager",
+        recipientType: "manager",
         message: `Vehicle ${vehicle.licensePlateNumber} is nearing service mileage.`,
       });
 
       if (vehicle.assignedDriverId) {
         await sendNotification({
           recipientId: vehicle.assignedDriverId,
-          recipientType: "Driver",
+          recipientType: "driver",
           message: `Your vehicle ${vehicle.licensePlateNumber} is due for service soon.`,
         });
       }
