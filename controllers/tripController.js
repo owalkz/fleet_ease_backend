@@ -236,7 +236,7 @@ const endTrip = async (req, res, next) => {
     await sendNotification({
       recipientId: trip.managerId,
       recipientType: "manager",
-      message: `Trip completed by driver ${driver.name} to ${trip.destination}.`,
+      message: `Trip completed by driver ${driver.name} to ${trip.destination.address}.`,
     });
 
     return res.status(200).json({ message: "Trip ended and mileage updated!" });
