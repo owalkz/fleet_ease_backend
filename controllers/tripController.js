@@ -38,7 +38,7 @@ const createTrip = async (req, res) => {
     await sendNotification({
       recipientId: driverId,
       recipientType: "driver",
-      message: `You've been assigned a new trip to ${destination}.`,
+      message: `You've been assigned a new trip to ${destination.address}.`,
     });
     res
       .status(201)
